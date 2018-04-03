@@ -1,0 +1,171 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: culdevateapi # NOTE: update this with your service name
+
+# Use serverless-webpack plugin to transpile ES6/ES7
+plugins:
+  - serverless-webpack
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+# Configuration for serverless-webpack
+# Enable auto-packing of external modules
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: prod
+  region: us-west-2
+
+  # 'iamRoleStatement' defines the permission policy for the Lambda function.
+  # In this case Lambda functions are granted with permissions to access DynamoDB.
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: arn:aws:dynamodb:us-west-2:666796627735:table/Artifacts
+
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+
+functions:
+  # Defines an HTTP API endpoint that calls the create function in api/artifacts/create.js
+  # - path: url path is /artifacts
+  # - method: POST request
+  # - cors: enabled CORS (Cross-Origin Resource Sharing) for browser cross
+  #     domain api call
+  # - authorizer: authenticate using the AWS IAM role
+  artifacts-create:
+    handler: api/artifacts/create.create
+    events:
+      - http:
+          path: artifacts
+          method: post
+          cors: true
+          authorizer: aws_iam
+  artifacts-read-details:
+    # Defines an HTTP API endpoint that calls the details function in read.js
+    # - path: url path is /artifacts/{id}
+    # - method: GET request
+    handler: api/artifacts/read.details
+    events:
+      - http:
+          path: artifacts/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  artifacts-read-list:
+    # Defines an HTTP API endpoint that calls the list function in read.js
+    # - path: url path is /artifacts
+    # - method: GET request
+    handler: api/artifacts/read.list
+    events:
+      - http:
+          path: artifacts
+          method: get
+          cors: true
+          authorizer: aws_iam
+  artifacts-update:
+    # Defines an HTTP API endpoint that calls the update function in update.js
+    # - path: url path is /artifacts/{id}
+    # - method: PUT request
+    handler: api/artifacts/update.update
+    events:
+      - http:
+          path: artifacts/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  artifacts-delete:
+    # Defines an HTTP API endpoint that calls the delete function in delete.js
+    # - path: url path is /artifacts/{id}
+    # - method: DELETE request
+    handler: api/artifacts/delete.main
+    events:
+      - http:
+          path: artifacts/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+
+#    The following are a few example events you can configure
+#    NOTE: Please make sure to change your handler code to work with those events
+#    Check the event documentation for details
+#    events:
+#      - http:
+#          path: users/create
+#          method: get
+#      - s3: ${env:BUCKET}
+#      - schedule: rate(10 minutes)
+#      - sns: greeter-topic
+#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
+#      - alexaSkill
+#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
+#      - iot:
+#          sql: "SELECT * FROM 'some_topic'"
+#      - cloudwatchEvent:
+#          event:
+#            source:
+#              - "aws.ec2"
+#            detail-type:
+#              - "EC2 Instance State-change Notification"
+#            detail:
+#              state:
+#                - pending
+#      - cloudwatchLog: '/aws/lambda/hello'
+#      - cognitoUserPool:
+#          pool: MyUserPool
+#          trigger: PreSignUp
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"

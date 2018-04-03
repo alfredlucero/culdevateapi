@@ -1,0 +1,11 @@
+{
+  "body": "{\"content\":\"updated test artifact\",\"attachment\":\"new.jpg\"}",
+  "pathParameters": {
+    "id": "7b711640-36a6-11e8-b809-eb27d865f8fc"
+  },
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}
